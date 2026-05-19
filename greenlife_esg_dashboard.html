@@ -1,0 +1,666 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.nav{display:flex;gap:4px;padding:0 0 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.5rem;flex-wrap:wrap}
+.nav-btn{padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary);font-size:13px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.nav-btn:hover:not(.active){background:var(--color-background-secondary)}
+.tab{display:none}.tab.active{display:block}
+.header{margin-bottom:1.5rem}
+.company-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--color-background-info);color:var(--color-text-info);padding:3px 10px;border-radius:var(--border-radius-md);margin-bottom:8px}
+.page-title{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--color-text-secondary)}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+.m-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px}
+.m-label{font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.m-val{font-size:22px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.m-sub{font-size:11px;color:var(--color-text-secondary);margin-top:4px}
+.m-trend-up{color:#0a7c4f}.m-trend-down{color:#a32d2d}
+.section-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:1rem}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.chart-grid.full{grid-template-columns:1fr}
+.chart-wrap{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem}
+.chart-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:1rem}
+.score-ring-wrap{display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.score-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-width:200px}
+.score-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.score-item-label{font-size:13px;color:var(--color-text-secondary)}
+.score-item-val{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.score-bar-wrap{margin-bottom:10px}
+.score-bar-label{display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px;color:var(--color-text-secondary)}
+.score-bar-track{height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.badge{display:inline-block;padding:3px 8px;border-radius:var(--border-radius-md);font-size:11px;font-weight:500}
+.badge-success{background:#eaf3de;color:#3b6d11}.badge-warn{background:#faeeda;color:#854f0b}.badge-danger{background:#fcebeb;color:#a32d2d}.badge-info{background:#e6f1fb;color:#185fa5}
+.flag-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.flag-row:last-child{border-bottom:none}
+.flag-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:11px;font-weight:700}
+.flag-critical{background:#fcebeb;color:#a32d2d}.flag-high{background:#faeeda;color:#854f0b}.flag-medium{background:#e6f1fb;color:#185fa5}
+.flag-text{font-size:13px;color:var(--color-text-primary)}
+.flag-cat{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.framework-table{width:100%;border-collapse:collapse;font-size:12px}
+.framework-table th{text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.framework-table td{padding:9px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle}
+.framework-table tr:last-child td{border-bottom:none}
+.framework-table tr:hover td{background:var(--color-background-secondary)}
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500}
+.pill-gri{background:#eaf3de;color:#3b6d11}.pill-brsr{background:#e6f1fb;color:#185fa5}.pill-sasb{background:#faeeda;color:#854f0b}
+.filter-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+.filter-row label{font-size:12px;color:var(--color-text-secondary)}
+.filter-row select{font-size:12px;padding:5px 10px;border-radius:var(--border-radius-md)}
+.dq-row{display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.dq-row:last-child{border-bottom:none}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;font-size:12px;color:var(--color-text-secondary)}
+.leg-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+.heatmap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.heatmap-cell{padding:14px;border-radius:var(--border-radius-md);text-align:center}
+.heatmap-label{font-size:11px;font-weight:500;margin-bottom:4px}
+.heatmap-score{font-size:20px;font-weight:500;margin-bottom:2px}
+.heatmap-sub{font-size:10px;opacity:.8}
+.scenario-slider-wrap{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.scenario-slider-wrap label{font-size:13px;color:var(--color-text-secondary);min-width:160px}
+</style>
+
+<h2 class="sr-only">GreenLife FMCG ESG Data Engine Dashboard — interactive sustainability reporting for 2022–2024</h2>
+
+<div style="padding:1.5rem 0 0">
+
+<div class="header">
+  <div class="company-badge"><i class="ti ti-leaf" aria-hidden="true"></i>FMCG · India · FY2024</div>
+  <div class="page-title">GreenLife FMCG ESG Data Engine</div>
+  <div class="page-sub">End-to-end sustainability reporting · GRI · BRSR · SASB · EcoVadis-style scoring</div>
+</div>
+
+<nav class="nav" role="tablist" aria-label="Dashboard sections">
+  <button class="nav-btn active" onclick="showTab('overview')" role="tab" aria-selected="true"><i class="ti ti-chart-pie" aria-hidden="true"></i> Overview</button>
+  <button class="nav-btn" onclick="showTab('emissions')" role="tab"><i class="ti ti-cloud" aria-hidden="true"></i> Emissions</button>
+  <button class="nav-btn" onclick="showTab('kpis')" role="tab"><i class="ti ti-activity" aria-hidden="true"></i> KPI Trends</button>
+  <button class="nav-btn" onclick="showTab('frameworks')" role="tab"><i class="ti ti-sitemap" aria-hidden="true"></i> Framework Mapping</button>
+  <button class="nav-btn" onclick="showTab('quality')" role="tab"><i class="ti ti-shield-check" aria-hidden="true"></i> Data Quality</button>
+  <button class="nav-btn" onclick="showTab('scenario')" role="tab"><i class="ti ti-adjustments" aria-hidden="true"></i> Scenario Analysis</button>
+</nav>
+
+<!-- ──────────────────────────────── OVERVIEW TAB ──────────────────────────────── -->
+<div id="tab-overview" class="tab active">
+
+  <div class="metric-grid">
+    <div class="m-card">
+      <div class="m-label">ESG Score 2024</div>
+      <div class="m-val" style="color:#185fa5">67.3</div>
+      <div class="m-sub"><span class="badge badge-info">Engaged</span></div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Total Emissions</div>
+      <div class="m-val">17,955</div>
+      <div class="m-sub"><span class="m-trend-up">↓ 4.1%</span> vs 2022 · tCO2e</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Renewable Energy</div>
+      <div class="m-val">17.9%</div>
+      <div class="m-sub"><span class="m-trend-up">↑ 2.8%</span> vs 2022</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Waste Recycling</div>
+      <div class="m-val">68.4%</div>
+      <div class="m-sub"><span class="m-trend-up">↑ 4.7%</span> vs 2022</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Gender Diversity</div>
+      <div class="m-val">27.6%</div>
+      <div class="m-sub">Female workforce</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">LTIFR</div>
+      <div class="m-val">0.384</div>
+      <div class="m-sub">Per million hours</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Water Recycling</div>
+      <div class="m-val">28.6%</div>
+      <div class="m-sub">of total withdrawal</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Employees</div>
+      <div class="m-val">13,436</div>
+      <div class="m-sub"><span class="m-trend-up">↑ 8.4%</span> vs 2022</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-wrap">
+      <div class="chart-title">ESG score — category breakdown (2024)</div>
+      <div class="legend-row">
+        <span><span class="leg-dot" style="background:#3266ad"></span>Environment 57.1</span>
+        <span><span class="leg-dot" style="background:#1d9e75"></span>Social 68.6</span>
+        <span><span class="leg-dot" style="background:#7f77dd"></span>Governance 79.7</span>
+      </div>
+      <div style="position:relative;height:220px"><canvas id="scoreRadar" role="img" aria-label="Radar chart showing ESG category scores: Environment 57.1, Social 68.6, Governance 79.7">ESG scores: Environment 57.1, Social 68.6, Governance 79.7</canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Overall ESG score trend 2022–2024</div>
+      <div style="position:relative;height:220px"><canvas id="scoreTrend" role="img" aria-label="Line chart showing overall ESG score: 2022=68.5, 2023=69.6, 2024=67.3">ESG scores 2022–2024: 68.5, 69.6, 67.3</canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Category scorecard with sub-scores</div>
+    <div style="margin-bottom:1rem">
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Environment (40% weight) · 57.1/100</div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Emissions</span><span>61.3</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:61.3%;background:#378add"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Energy</span><span>47.8</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:47.8%;background:#378add"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Water</span><span>59.2</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:59.2%;background:#378add"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Waste</span><span>74.6</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:74.6%;background:#378add"></div></div></div>
+    </div>
+    <div style="margin-bottom:1rem">
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Social (30% weight) · 68.6/100</div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Diversity</span><span>63.8</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:63.8%;background:#1d9e75"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Safety (LTIFR)</span><span>81.3</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:81.3%;background:#1d9e75"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Training</span><span>68.4</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:68.4%;background:#1d9e75"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Community</span><span>87.2</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:87.2%;background:#1d9e75"></div></div></div>
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Governance (30% weight) · 79.7/100</div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Ethics & Compliance</span><span>81.4</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:81.4%;background:#7f77dd"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Board Diversity</span><span>72.5</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:72.5%;background:#7f77dd"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Supplier Conduct</span><span>68.3</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:68.3%;background:#7f77dd"></div></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Risk flags (FY2024)</div>
+    <div class="flag-row">
+      <div class="flag-icon flag-medium">M</div>
+      <div><div class="flag-text">Renewable energy share at 17.9% — below 40% good-practice threshold. Transition risk to business.</div><div class="flag-cat">Environment · Renewable Energy · Medium</div></div>
+    </div>
+    <div class="flag-row">
+      <div class="flag-icon flag-medium">M</div>
+      <div><div class="flag-text">Emission intensity at 3.74 tCO2e/INR crore. On track but headroom to close gap vs 2030 target.</div><div class="flag-cat">Environment · Emission Intensity · Medium</div></div>
+    </div>
+    <div class="flag-row">
+      <div class="flag-icon flag-medium">M</div>
+      <div><div class="flag-text">Board gender diversity at 33% — approaches SEBI mandate. Proactive target should be ≥40%.</div><div class="flag-cat">Governance · Board Diversity · Medium</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────── EMISSIONS TAB ──────────────────────────────── -->
+<div id="tab-emissions" class="tab">
+  <div class="metric-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="m-card"><div class="m-label">Scope 1</div><div class="m-val">2,526</div><div class="m-sub">tCO2e · Direct</div></div>
+    <div class="m-card"><div class="m-label">Scope 2</div><div class="m-val">13,422</div><div class="m-sub">tCO2e · Electricity</div></div>
+    <div class="m-card"><div class="m-label">Scope 3</div><div class="m-val">2,007</div><div class="m-sub">tCO2e · Value chain</div></div>
+    <div class="m-card"><div class="m-label">Total GHG</div><div class="m-val">17,955</div><div class="m-sub">tCO2e · 2024</div></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-wrap">
+      <div class="chart-title">Scope breakdown by year (tCO2e)</div>
+      <div class="legend-row">
+        <span><span class="leg-dot" style="background:#e24b4a"></span>Scope 1</span>
+        <span><span class="leg-dot" style="background:#378add"></span>Scope 2</span>
+        <span><span class="leg-dot" style="background:#ef9f27"></span>Scope 3</span>
+      </div>
+      <div style="position:relative;height:240px"><canvas id="emitBar" role="img" aria-label="Stacked bar chart of emissions by scope 2022 to 2024">2022: S1=2674, S2=14477, S3=2127; 2023: S1=2599, S2=14032, S3=2073; 2024: S1=2526, S2=13422, S3=2007</canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Scope 3 breakdown — 2024 (tCO2e)</div>
+      <div style="position:relative;height:240px"><canvas id="scope3Pie" role="img" aria-label="Pie chart of Scope 3 emissions: supply chain 1682, waste 250, travel 75">Supply chain 1682, waste 250, travel 75 tCO2e</canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid full">
+    <div class="chart-wrap">
+      <div class="chart-title">Emission intensity vs 2030 target trajectory (tCO2e / INR crore revenue)</div>
+      <div style="position:relative;height:200px"><canvas id="intensityLine" role="img" aria-label="Line chart showing emission intensity trend and 2030 reduction target">Emission intensity declining from 2022 baseline toward 2030 target</canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Emission factor reference (hardcoded config values)</div>
+    <table class="framework-table">
+      <thead><tr><th>Source</th><th>Scope</th><th>Unit</th><th>Factor (tCO2e)</th><th>Standard</th></tr></thead>
+      <tbody>
+        <tr><td>Electricity (India grid)</td><td>Scope 2</td><td>per kWh</td><td>0.000708</td><td>CEA 2023</td></tr>
+        <tr><td>Diesel</td><td>Scope 1</td><td>per litre</td><td>0.002693</td><td>IPCC AR6</td></tr>
+        <tr><td>Natural gas</td><td>Scope 1</td><td>per SCM</td><td>0.001996</td><td>IPCC AR6</td></tr>
+        <tr><td>Waste — landfill</td><td>Scope 3</td><td>per tonne</td><td>0.4680</td><td>GHG Protocol</td></tr>
+        <tr><td>Air travel</td><td>Scope 3</td><td>per pax-km</td><td>0.000255</td><td>DEFRA 2023</td></tr>
+        <tr><td>Renewable electricity</td><td>Scope 2</td><td>per kWh</td><td>0.000000</td><td>Market-based</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ──────────────────────────────── KPI TRENDS TAB ──────────────────────────────── -->
+<div id="tab-kpis" class="tab">
+  <div class="filter-row">
+    <label>KPI Category:</label>
+    <select id="kpiCatFilter" onchange="updateKpiChart()">
+      <option value="env">Environment</option>
+      <option value="social">Social</option>
+      <option value="energy">Energy</option>
+    </select>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-wrap" id="kpiChartWrap1">
+      <div class="chart-title" id="kpiTitle1">Total emissions tCO2e</div>
+      <div style="position:relative;height:200px"><canvas id="kpiChart1" role="img" aria-label="KPI trend chart 1">KPI trend data</canvas></div>
+    </div>
+    <div class="chart-wrap" id="kpiChartWrap2">
+      <div class="chart-title" id="kpiTitle2">Renewable energy %</div>
+      <div style="position:relative;height:200px"><canvas id="kpiChart2" role="img" aria-label="KPI trend chart 2">KPI trend data</canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-wrap">
+      <div class="chart-title">Water withdrawal (kL) and recycling rate</div>
+      <div style="position:relative;height:200px"><canvas id="waterChart" role="img" aria-label="Bar chart of water withdrawal 2022-2024">Water withdrawal trend</canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Waste: recycling rate vs landfill rate (%)</div>
+      <div style="position:relative;height:200px"><canvas id="wasteChart" role="img" aria-label="Bar chart of waste recycling rates">Waste management trends</canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid full">
+    <div class="chart-wrap">
+      <div class="chart-title">Social KPIs — gender diversity, training hours per employee, LTIFR</div>
+      <div class="legend-row">
+        <span><span class="leg-dot" style="background:#1d9e75"></span>Gender diversity %</span>
+        <span><span class="leg-dot" style="background:#7f77dd"></span>Training hrs/employee</span>
+        <span><span class="leg-dot" style="background:#e24b4a;border:1px dashed #e24b4a"></span>LTIFR (×100)</span>
+      </div>
+      <div style="position:relative;height:220px"><canvas id="socialChart" role="img" aria-label="Multi-line social KPI chart">Social KPIs 2022-2024</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────── FRAMEWORKS TAB ──────────────────────────────── -->
+<div id="tab-frameworks" class="tab">
+  <div class="filter-row">
+    <label>Framework:</label>
+    <select id="frameworkFilter" onchange="filterFramework()">
+      <option value="all">All frameworks</option>
+      <option value="GRI">GRI only</option>
+      <option value="BRSR">BRSR only</option>
+      <option value="SASB">SASB only</option>
+    </select>
+    <label>Category:</label>
+    <select id="categoryFilter" onchange="filterFramework()">
+      <option value="all">All categories</option>
+      <option value="env">Environment</option>
+      <option value="social">Social</option>
+      <option value="gov">Governance</option>
+    </select>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="framework-table" id="frameworkTable">
+      <thead><tr><th>Raw field</th><th>ESG metric</th><th>Framework</th><th>GRI code</th><th>BRSR section</th><th>SASB code</th><th>2024 value</th></tr></thead>
+      <tbody id="frameworkBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ──────────────────────────────── DATA QUALITY TAB ──────────────────────────────── -->
+<div id="tab-quality" class="tab">
+  <div class="metric-grid">
+    <div class="m-card"><div class="m-label">Issues Found</div><div class="m-val" style="color:#a32d2d">9</div><div class="m-sub">Across 5 datasets</div></div>
+    <div class="m-card"><div class="m-label">Corrections Applied</div><div class="m-val" style="color:#0a7c4f">11</div><div class="m-sub">Auto-imputed</div></div>
+    <div class="m-card"><div class="m-label">Datasets Processed</div><div class="m-val">6</div><div class="m-sub">Excel + CSV + API</div></div>
+    <div class="m-card"><div class="m-label">Data Completeness</div><div class="m-val">98.4%</div><div class="m-sub">After corrections</div></div>
+  </div>
+
+  <div class="chart-wrap" style="margin-bottom:1rem">
+    <div class="chart-title">Issue types by dataset</div>
+    <div style="position:relative;height:220px"><canvas id="dqChart" role="img" aria-label="Bar chart of data quality issues by dataset">Data quality issues per dataset</canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Data quality issues log</div>
+    <div class="dq-row" style="font-size:11px;font-weight:500;color:var(--color-text-secondary)">
+      <span>DATASET · COLUMN</span><span>ISSUE TYPE</span><span>VALUE</span><span>ACTION</span>
+    </div>
+    <div class="dq-row"><span>energy_consumption · electricity_kwh</span><span><span class="badge badge-warn">NULL_VALUE</span></span><span>null</span><span><span class="badge badge-success">Imputed median</span></span></div>
+    <div class="dq-row"><span>energy_consumption · electricity_kwh</span><span><span class="badge badge-warn">NULL_VALUE</span></span><span>null</span><span><span class="badge badge-success">Imputed median</span></span></div>
+    <div class="dq-row"><span>energy_consumption · electricity_kwh</span><span><span class="badge badge-warn">NULL_VALUE</span></span><span>null</span><span><span class="badge badge-success">Imputed median</span></span></div>
+    <div class="dq-row"><span>energy_consumption · diesel_litres</span><span><span class="badge badge-danger">BELOW_MINIMUM</span></span><span>-500</span><span><span class="badge badge-success">Set to null</span></span></div>
+    <div class="dq-row"><span>energy_consumption · diesel_litres</span><span><span class="badge badge-danger">BELOW_MINIMUM</span></span><span>-500</span><span><span class="badge badge-success">Set to null</span></span></div>
+    <div class="dq-row"><span>water_usage · water_withdrawal_kl</span><span><span class="badge badge-warn">NULL_VALUE</span></span><span>null</span><span><span class="badge badge-success">Imputed median</span></span></div>
+    <div class="dq-row"><span>water_usage · water_withdrawal_kl</span><span><span class="badge badge-warn">NULL_VALUE</span></span><span>null</span><span><span class="badge badge-success">Imputed median</span></span></div>
+    <div class="dq-row"><span>water_usage · water_withdrawal_kl</span><span><span class="badge badge-warn">NULL_VALUE</span></span><span>null</span><span><span class="badge badge-success">Imputed median</span></span></div>
+    <div class="dq-row"><span>water_usage · water_withdrawal_kl</span><span><span class="badge badge-warn">NULL_VALUE</span></span><span>null</span><span><span class="badge badge-success">Imputed median</span></span></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Audit trail — recent pipeline activity</div>
+    <table class="framework-table">
+      <thead><tr><th>Timestamp</th><th>Event</th><th>Table</th><th>Changed by</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>2024-12-01 08:42:45</td><td><span class="badge badge-info">INSERT</span></td><td>kpi_results</td><td>pipeline_admin</td><td>3 rows · KPI computation</td></tr>
+        <tr><td>2024-12-01 08:42:45</td><td><span class="badge badge-info">INSERT</span></td><td>esg_scorecard</td><td>pipeline_admin</td><td>3 rows · Scorecard computation</td></tr>
+        <tr><td>2024-12-01 08:42:45</td><td><span class="badge badge-info">INSERT</span></td><td>framework_mapping</td><td>system</td><td>22 rows · Framework setup</td></tr>
+        <tr><td>2024-12-01 08:42:44</td><td><span class="badge badge-warn">CORRECTION</span></td><td>cleaned_data</td><td>pipeline_v1</td><td>energy · diesel_litres · −500 → null</td></tr>
+        <tr><td>2024-12-01 08:42:44</td><td><span class="badge badge-warn">CORRECTION</span></td><td>cleaned_data</td><td>pipeline_v1</td><td>water · withdrawal · null → median imputed</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ──────────────────────────────── SCENARIO ANALYSIS TAB ──────────────────────────────── -->
+<div id="tab-scenario" class="tab">
+  <div class="card" style="margin-bottom:1rem">
+    <div class="section-title">What-if scenario analysis</div>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1.25rem">Adjust levers below to project future ESG outcomes. Baseline: FY2024 actual.</p>
+
+    <div class="scenario-slider-wrap">
+      <label>Emission reduction (%)</label>
+      <input type="range" min="0" max="60" value="0" step="1" id="emitReduce" oninput="updateScenario()">
+      <span id="emitReduceVal" style="font-size:13px;font-weight:500;min-width:35px">0%</span>
+    </div>
+    <div class="scenario-slider-wrap">
+      <label>Renewable energy increase (%)</label>
+      <input type="range" min="0" max="80" value="0" step="1" id="renewIncrease" oninput="updateScenario()">
+      <span id="renewIncreaseVal" style="font-size:13px;font-weight:500;min-width:35px">0%</span>
+    </div>
+    <div class="scenario-slider-wrap">
+      <label>Waste recycling increase (%)</label>
+      <input type="range" min="0" max="30" value="0" step="1" id="wasteIncrease" oninput="updateScenario()">
+      <span id="wasteIncreaseVal" style="font-size:13px;font-weight:500;min-width:35px">0%</span>
+    </div>
+    <div class="scenario-slider-wrap">
+      <label>Gender diversity increase (%)</label>
+      <input type="range" min="0" max="20" value="0" step="1" id="diversityIncrease" oninput="updateScenario()">
+      <span id="diversityIncreaseVal" style="font-size:13px;font-weight:500;min-width:35px">0%</span>
+    </div>
+  </div>
+
+  <div class="metric-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.25rem">
+    <div class="m-card"><div class="m-label">Projected Emissions</div><div class="m-val" id="projEmit">17,955</div><div class="m-sub">tCO2e</div></div>
+    <div class="m-card"><div class="m-label">Projected Renewable</div><div class="m-val" id="projRenew">17.9%</div><div class="m-sub"></div></div>
+    <div class="m-card"><div class="m-label">Projected Recycling</div><div class="m-val" id="projRecycle">68.4%</div><div class="m-sub"></div></div>
+    <div class="m-card"><div class="m-label">Projected ESG Score</div><div class="m-val" id="projScore" style="color:#185fa5">67.3</div><div class="m-sub" id="projBand">Engaged</div></div>
+  </div>
+
+  <div class="chart-wrap" style="margin-bottom:1rem">
+    <div class="chart-title">Scenario vs baseline vs 2030 target</div>
+    <div style="position:relative;height:240px"><canvas id="scenarioChart" role="img" aria-label="Bar chart comparing baseline, scenario, and 2030 emissions target">Scenario analysis chart</canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">ESG risk heatmap — projected scenario</div>
+    <div class="heatmap-grid" id="heatmapGrid"></div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const YEARS = [2022,2023,2024];
+const ESG_DATA = {
+  overall:[68.5,69.6,67.3],
+  env:[56.1,56.5,57.1],
+  social:[70.4,71.5,68.6],
+  gov:[83.3,85.1,79.7],
+  emissions:[19278,18704,17955],
+  scope1:[2674,2599,2526],
+  scope2:[14477,14032,13422],
+  scope3:[2127,2073,2007],
+  renewable:[17.44,17.75,17.92],
+  water:[718000,694000,672000],
+  waterRecycling:[28.1,28.4,28.6],
+  wasteRecycling:[65.3,66.3,68.4],
+  wasteLandfill:[19.8,18.6,17.2],
+  gender:[27.3,26.0,27.6],
+  training:[23.4,25.1,24.8],
+  ltifr:[0.320,0.207,0.384]
+};
+const CHARTS = {};
+function mkChart(id, config) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (CHARTS[id]) CHARTS[id].destroy();
+  CHARTS[id] = new Chart(el, config);
+  return CHARTS[id];
+}
+const baseOpts = {
+  responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false}},
+  scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.1)'},ticks:{font:{size:11}}}}
+};
+
+function initOverview() {
+  mkChart('scoreRadar',{type:'radar',data:{labels:['Emissions','Energy','Water','Waste','Diversity','Safety','Training','Board','Ethics'],
+    datasets:[{label:'2024',data:[61.3,47.8,59.2,74.6,63.8,81.3,68.4,72.5,81.4],
+    backgroundColor:'rgba(55,138,221,.12)',borderColor:'#378add',pointBackgroundColor:'#378add',pointRadius:3,borderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{size:9}},grid:{color:'rgba(128,128,128,.15)'},pointLabels:{font:{size:10}}}}}
+  });
+  mkChart('scoreTrend',{type:'line',data:{labels:YEARS,
+    datasets:[
+      {label:'Overall',data:ESG_DATA.overall,borderColor:'#378add',backgroundColor:'rgba(55,138,221,.08)',fill:true,tension:.35,pointRadius:4,borderWidth:2},
+      {label:'Environment',data:ESG_DATA.env,borderColor:'#1d9e75',borderDash:[4,3],tension:.35,pointRadius:3,borderWidth:1.5,fill:false},
+      {label:'Social',data:ESG_DATA.social,borderColor:'#7f77dd',borderDash:[4,3],tension:.35,pointRadius:3,borderWidth:1.5,fill:false},
+      {label:'Governance',data:ESG_DATA.gov,borderColor:'#ef9f27',borderDash:[4,3],tension:.35,pointRadius:3,borderWidth:1.5,fill:false}
+    ]},
+    options:{...baseOpts,scales:{...baseOpts.scales,y:{...baseOpts.scales?.y,min:50,max:100}}}
+  });
+}
+
+function initEmissions() {
+  mkChart('emitBar',{type:'bar',data:{labels:YEARS,
+    datasets:[
+      {label:'Scope 1',data:ESG_DATA.scope1,backgroundColor:'#e24b4a',stack:'s'},
+      {label:'Scope 2',data:ESG_DATA.scope2,backgroundColor:'#378add',stack:'s'},
+      {label:'Scope 3',data:ESG_DATA.scope3,backgroundColor:'#ef9f27',stack:'s'}
+    ]},
+    options:{...baseOpts,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,grid:{color:'rgba(128,128,128,.1)'},ticks:{font:{size:11}}}}}
+  });
+  mkChart('scope3Pie',{type:'doughnut',
+    data:{labels:['Supply chain','Waste to disposal','Business travel'],
+      datasets:[{data:[1682,250,75],backgroundColor:['#378add','#e24b4a','#ef9f27'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:10,padding:12}}},cutout:'55%'}
+  });
+  const target2030 = 19278*0.55;
+  mkChart('intensityLine',{type:'line',
+    data:{labels:[2022,2023,2024,2025,2026,2027,2028,2029,2030],
+      datasets:[
+        {label:'Actual intensity',data:[4.01,3.90,3.74,null,null,null,null,null,null],borderColor:'#378add',pointRadius:4,borderWidth:2,spanGaps:false},
+        {label:'2030 target path',data:[4.01,3.77,3.54,3.31,3.08,2.85,2.62,2.39,2.21],borderColor:'#1d9e75',borderDash:[5,4],pointRadius:2,borderWidth:1.5},
+        {label:'Forecast (linear)',data:[null,null,3.74,3.61,3.48,3.35,3.22,3.09,2.96],borderColor:'#ef9f27',borderDash:[3,3],pointRadius:0,borderWidth:1.5}
+      ]},
+    options:{...baseOpts,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:10}}}}
+  });
+}
+
+function initKpis() {
+  mkChart('kpiChart1',{type:'bar',data:{labels:YEARS,
+    datasets:[{label:'Total emissions',data:ESG_DATA.emissions,backgroundColor:'rgba(55,138,221,.7)',borderRadius:4}]},
+    options:{...baseOpts}});
+  mkChart('kpiChart2',{type:'line',data:{labels:YEARS,
+    datasets:[{label:'Renewable energy %',data:ESG_DATA.renewable,borderColor:'#1d9e75',backgroundColor:'rgba(29,158,117,.1)',fill:true,tension:.4,pointRadius:4,borderWidth:2}]},
+    options:{...baseOpts}});
+  mkChart('waterChart',{type:'bar',data:{labels:YEARS,
+    datasets:[
+      {label:'Withdrawal (kL)',data:ESG_DATA.water,backgroundColor:'rgba(55,138,221,.6)',yAxisID:'y',borderRadius:3},
+      {label:'Recycling %',data:ESG_DATA.waterRecycling,type:'line',borderColor:'#7f77dd',pointRadius:4,yAxisID:'y1',borderWidth:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{grid:{color:'rgba(128,128,128,.1)'},ticks:{font:{size:11}}},
+        y1:{position:'right',ticks:{font:{size:11}},grid:{display:false}}}}});
+  mkChart('wasteChart',{type:'bar',data:{labels:YEARS,
+    datasets:[
+      {label:'Recycling rate',data:ESG_DATA.wasteRecycling,backgroundColor:'rgba(29,158,117,.7)',borderRadius:3},
+      {label:'Landfill rate',data:ESG_DATA.wasteLandfill,backgroundColor:'rgba(226,75,74,.5)',borderRadius:3}
+    ]},
+    options:{...baseOpts,plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:10}}}}});
+  mkChart('socialChart',{type:'line',data:{labels:YEARS,
+    datasets:[
+      {label:'Gender diversity %',data:ESG_DATA.gender,borderColor:'#1d9e75',tension:.4,pointRadius:4,borderWidth:2,fill:false},
+      {label:'Training hrs/employee',data:ESG_DATA.training,borderColor:'#7f77dd',tension:.4,pointRadius:4,borderWidth:2,fill:false},
+      {label:'LTIFR ×100',data:ESG_DATA.ltifr.map(v=>+(v*100).toFixed(2)),borderColor:'#e24b4a',borderDash:[5,3],tension:.4,pointRadius:4,borderWidth:2,fill:false}
+    ]},
+    options:{...baseOpts,plugins:{legend:{display:false}}}});
+}
+
+const FRAMEWORK_DATA = [
+  {field:'scope1_emissions_tco2e',metric:'Direct GHG Emissions',fw:'GRI',gri:'GRI 305-1',brsr:'Principle 6',sasb:'EM-FP-110a.1',val:'2,526 tCO2e',cat:'env'},
+  {field:'scope2_emissions_tco2e',metric:'Indirect GHG Emissions',fw:'GRI',gri:'GRI 305-2',brsr:'Principle 6',sasb:'EM-FP-110a.1',val:'13,422 tCO2e',cat:'env'},
+  {field:'scope3_emissions_tco2e',metric:'Other Indirect GHG',fw:'GRI',gri:'GRI 305-3',brsr:'Principle 6',sasb:'EM-FP-110a.1',val:'2,007 tCO2e',cat:'env'},
+  {field:'total_energy_kwh',metric:'Total Energy Consumption',fw:'GRI',gri:'GRI 302-1',brsr:'Principle 6',sasb:'FB-AG-130a.1',val:'168.2M kWh',cat:'env'},
+  {field:'renewable_energy_kwh',metric:'Renewable Energy',fw:'GRI',gri:'GRI 302-1',brsr:'Principle 6',sasb:'FB-AG-130a.1',val:'17.9%',cat:'env'},
+  {field:'total_water_kl',metric:'Total Water Withdrawal',fw:'GRI',gri:'GRI 303-3',brsr:'Principle 6',sasb:'FB-AG-140a.1',val:'672,000 kL',cat:'env'},
+  {field:'water_recycled_kl',metric:'Water Recycled',fw:'BRSR',gri:'GRI 303-3',brsr:'Principle 6',sasb:'',val:'192,400 kL',cat:'env'},
+  {field:'total_waste_tonne',metric:'Total Waste Generated',fw:'GRI',gri:'GRI 306-3',brsr:'Principle 6',sasb:'FB-AG-150a.1',val:'3,890 t',cat:'env'},
+  {field:'waste_recycling_rate',metric:'Waste Recycling Rate',fw:'BRSR',gri:'',brsr:'Principle 6',sasb:'',val:'68.4%',cat:'env'},
+  {field:'gender_diversity_pct',metric:'Gender Diversity',fw:'GRI',gri:'GRI 405-1',brsr:'Principle 5',sasb:'',val:'27.6%',cat:'social'},
+  {field:'training_hours',metric:'Training & Education',fw:'GRI',gri:'GRI 404-1',brsr:'Principle 5',sasb:'',val:'24.8 hrs/emp',cat:'social'},
+  {field:'ltifr',metric:'Lost Time Injury Rate',fw:'GRI',gri:'GRI 403-9',brsr:'Principle 8',sasb:'FB-AG-320a.1',val:'0.384',cat:'social'},
+  {field:'employee_turnover_pct',metric:'Employee Turnover',fw:'GRI',gri:'GRI 401-1',brsr:'Principle 3',sasb:'',val:'12.8%',cat:'social'},
+  {field:'board_diversity_pct',metric:'Board Gender Diversity',fw:'GRI',gri:'GRI 405-1',brsr:'Principle 1',sasb:'',val:'33.3%',cat:'gov'},
+  {field:'ethics_violations',metric:'Ethics Violations',fw:'GRI',gri:'GRI 205-3',brsr:'Principle 1',sasb:'',val:'5 reported',cat:'gov'},
+  {field:'supplier_audits_pct',metric:'Supplier Sustainability Audits',fw:'GRI',gri:'GRI 308-1',brsr:'Principle 2',sasb:'',val:'65.4%',cat:'gov'},
+];
+
+function renderFramework(fw='all', cat='all') {
+  const tbody = document.getElementById('frameworkBody');
+  if (!tbody) return;
+  const rows = FRAMEWORK_DATA.filter(r => (fw==='all'||r.fw===fw) && (cat==='all'||r.cat===cat));
+  tbody.innerHTML = rows.map(r => `<tr>
+    <td style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary)">${r.field}</td>
+    <td style="font-weight:500">${r.metric}</td>
+    <td><span class="pill pill-${r.fw.toLowerCase()}">${r.fw}</span></td>
+    <td>${r.gri||'—'}</td>
+    <td>${r.brsr||'—'}</td>
+    <td>${r.sasb||'—'}</td>
+    <td style="font-weight:500">${r.val}</td>
+  </tr>`).join('');
+}
+
+function filterFramework() {
+  renderFramework(document.getElementById('frameworkFilter').value, document.getElementById('categoryFilter').value);
+}
+
+function initQuality() {
+  mkChart('dqChart',{type:'bar',data:{labels:['Energy','Water','Waste','HR','Supply chain'],
+    datasets:[
+      {label:'Issues',data:[5,4,0,0,0],backgroundColor:'rgba(226,75,74,.65)',borderRadius:3},
+      {label:'Corrections',data:[6,5,0,0,0],backgroundColor:'rgba(55,138,221,.55)',borderRadius:3}
+    ]},
+    options:{...baseOpts,plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:10}}}}});
+}
+
+let scenarioChart;
+function initScenario() {
+  scenarioChart = mkChart('scenarioChart',{type:'bar',
+    data:{labels:['Baseline 2022','FY2024 actual','Scenario projection','2030 target (−45%)'],
+      datasets:[{
+        data:[19278,17955,17955,10603],
+        backgroundColor:['rgba(128,128,128,.4)','rgba(55,138,221,.65)','rgba(29,158,117,.65)','rgba(29,158,117,.35)'],
+        borderRadius:4
+      }]},
+    options:{...baseOpts,plugins:{legend:{display:false}}}});
+  updateHeatmap(17955,17.92,68.4,27.6);
+}
+
+function updateScenario() {
+  const er = parseInt(document.getElementById('emitReduce').value);
+  const ri = parseInt(document.getElementById('renewIncrease').value);
+  const wi = parseInt(document.getElementById('wasteIncrease').value);
+  const di = parseInt(document.getElementById('diversityIncrease').value);
+  document.getElementById('emitReduceVal').textContent = er+'%';
+  document.getElementById('renewIncreaseVal').textContent = ri+'%';
+  document.getElementById('wasteIncreaseVal').textContent = wi+'%';
+  document.getElementById('diversityIncreaseVal').textContent = di+'%';
+
+  const baseEmit = 17955, baseRenew = 17.92, baseRecycle = 68.4, baseGender = 27.6;
+  const projEmit = Math.round(baseEmit * (1 - er/100));
+  const projRenew = Math.min(100, +(baseRenew + ri).toFixed(1));
+  const projRecycle = Math.min(100, +(baseRecycle + wi).toFixed(1));
+  const projGender = Math.min(100, +(baseGender + di).toFixed(1));
+
+  document.getElementById('projEmit').textContent = projEmit.toLocaleString();
+  document.getElementById('projRenew').textContent = projRenew+'%';
+  document.getElementById('projRecycle').textContent = projRecycle+'%';
+
+  const emitScore = Math.max(0, Math.min(100, 100*(35-projEmit/COMPANY_REV)/(35-5)));
+  const renewScore = Math.max(0, Math.min(100, 100*(projRenew-5)/(70-5)));
+  const recycleScore = Math.max(0, Math.min(100, 100*(projRecycle-20)/(80-20)));
+  const genderScore = Math.max(0, Math.min(100, 100*(projGender-10)/(40-10)));
+  const envScore = emitScore*.40 + renewScore*.25 + 59.2*.20 + recycleScore*.15;
+  const socialScore = genderScore*.30 + 81.3*.30 + 68.4*.20 + 87.2*.20;
+  const govScore = 79.7;
+  const overall = +(envScore*.40 + socialScore*.30 + govScore*.30).toFixed(1);
+
+  document.getElementById('projScore').textContent = overall;
+  const band = overall>=90?'Outstanding':overall>=70?'Advanced':overall>=50?'Engaged':overall>=25?'Partial':'Insufficient';
+  document.getElementById('projBand').textContent = band;
+
+  if (scenarioChart) {
+    scenarioChart.data.datasets[0].data = [19278,17955,projEmit,10603];
+    scenarioChart.update();
+  }
+  updateHeatmap(projEmit, projRenew, projRecycle, projGender);
+}
+
+const COMPANY_REV = 4800;
+function heatColor(score) {
+  if (score >= 75) return {bg:'#eaf3de',text:'#3b6d11'};
+  if (score >= 50) return {bg:'#e6f1fb',text:'#185fa5'};
+  if (score >= 30) return {bg:'#faeeda',text:'#854f0b'};
+  return {bg:'#fcebeb',text:'#a32d2d'};
+}
+function updateHeatmap(emit, renew, recycle, gender) {
+  const cells = [
+    {label:'Emissions',score:Math.round(Math.max(0,Math.min(100,100*(35-emit/COMPANY_REV)/(35-5))))},
+    {label:'Energy',score:Math.round(Math.max(0,Math.min(100,100*(renew-5)/(70-5))))},
+    {label:'Water',score:59},
+    {label:'Waste',score:Math.round(Math.max(0,Math.min(100,100*(recycle-20)/(80-20))))},
+    {label:'Diversity',score:Math.round(Math.max(0,Math.min(100,100*(gender-10)/(40-10))))},
+    {label:'Safety',score:81},
+    {label:'Training',score:68},
+    {label:'Board',score:73},
+    {label:'Ethics',score:81},
+  ];
+  const grid = document.getElementById('heatmapGrid');
+  if (!grid) return;
+  grid.innerHTML = cells.map(c => {
+    const col = heatColor(c.score);
+    const risk = c.score>=75?'Low risk':c.score>=50?'Medium':c.score>=30?'High':'Critical';
+    return `<div class="heatmap-cell" style="background:${col.bg};color:${col.text}">
+      <div class="heatmap-label">${c.label}</div>
+      <div class="heatmap-score">${c.score}</div>
+      <div class="heatmap-sub">${risk}</div>
+    </div>`;
+  }).join('');
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {b.classList.remove('active');b.setAttribute('aria-selected','false')});
+  const tab = document.getElementById('tab-'+name);
+  if (tab) tab.classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  const tabOrder = ['overview','emissions','kpis','frameworks','quality','scenario'];
+  const idx = tabOrder.indexOf(name);
+  if (btns[idx]) {btns[idx].classList.add('active');btns[idx].setAttribute('aria-selected','true');}
+
+  if (name==='overview') initOverview();
+  if (name==='emissions') initEmissions();
+  if (name==='kpis') initKpis();
+  if (name==='frameworks') renderFramework();
+  if (name==='quality') initQuality();
+  if (name==='scenario') initScenario();
+}
+
+setTimeout(()=>{
+  initOverview();
+  renderFramework();
+},100);
+</script>
